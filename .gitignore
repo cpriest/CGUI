@@ -1,3 +1,4 @@
 *.sublime-*
 _create_docs.cmd
 NaturalDocs/*
+samples/notes.json

@@ -41,15 +41,14 @@ Class CControl ;Never created directly
 			;Store old font
 			hFold := DllCall("SelectObject", "PTR", hDC, "PTR", hFont)
 
-			DllCall("GetTextExtentPoint32", "PTR", hDC, "Str", this.Text, "Int", StrLen(this.Text), "PTR", (size := new _Struct("LONG width, LONG height"))[""])
-
+			DllCall("GetTextExtentPoint32", "Uint", hDC, "str", this.Text, "int", StrLen(this.Text), "int64P", size)
 			;Restore old font
 			DllCall("SelectObject", "PTR", hDC, "PTR", hFold)
 			DllCall("ReleaseDC", "PTR", 0, "PTR", hDC)
 		}
 		else
 			return
-		this.Size := {Width : size.width, Height : size.height}
+		this.Size := {Width : size & 0xFFFFFFFF, Height : ((size >> 32) & 0xFFFFFFFF) }
 	}
 
 	/*

@@ -374,7 +374,7 @@ Class CGUI
 	/*
 	Function: Color
 
-	Changes the default font used for controls from here on.
+	Changes the default color used for the window and controls from here on.
 
 	Parameters:
 		WindowColor - Color of the window background. See http://www.autohotkey.com/docs/commands/Gui.htm#Color
@@ -762,7 +762,7 @@ Class CGUI
 				else if(Name = "Size")
 				{
 					VarSetCapacity(rc, 16)
-					DllCall("GetClientRect", "PTR", this.hwnd, "PTRP", rc, "UINT")
+					DllCall("GetClientRect", "PTR", this.hwnd, "PTR", &rc, "UINT")
 					Value := {width : NumGet(rc, 8, "int"), height : NumGet(rc, 12, "int")}
 				}
 				else if(Name = "WindowSize")
@@ -1186,6 +1186,7 @@ Class CGUI
 	*/
 }
 
+Goto CGUI_EOF
 
 ;Event handlers for gui and control events:
 CGUI_Size:
@@ -1194,18 +1195,19 @@ CGUI_DropFiles:
 CGUI_Close:
 CGUI_Escape:
 CGUI_HandleEvent:
-CGUI.HandleEvent()
-return
+	CGUI.HandleEvent()
+	return
 
 ;Events are processed through an event queue and a timer so that no window messages will be missed.
 CGUI_HandleEventTimer:
-while(CGUI.EventQueue.MaxIndex())
-{
-	SetTimer, CGUI_HandleEventTimer, Off
-	CGUI.GUIList[CGUI.EventQueue[1].GUI].RerouteEvent(CGUI.EventQueue.Remove(1))
-	SetTimer, CGUI_HandleEventTimer, -1
-}
-return
+	while(CGUI.EventQueue.MaxIndex())
+	{
+		SetTimer, CGUI_HandleEventTimer, Off
+		CGUI.GUIList[CGUI.EventQueue[1].GUI].RerouteEvent(CGUI.EventQueue.Remove(1))
+		SetTimer, CGUI_HandleEventTimer, -1
+	}
+	return
+
 /*
 Function: CGUI_ShellMessage
 This internal function is used to monitor closing of the parent windows of owned GUIs. It must not need to be called directly by a user of this library.
@@ -1401,3 +1403,6 @@ CGUI_ClientToWin(hwnd, ByRef x, ByRef y)
 #include %A_LineFile%\..\CFolderDialog.ahk
 #include %A_LineFile%\..\CEnumerator.ahk
 #include %A_LineFile%\..\CMenu.ahk
+
+CGUI_EOF:
+	____ :=
